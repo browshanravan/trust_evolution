@@ -20,15 +20,13 @@ class Character:
             self.reward -= 0
 
         if target.cooperate:
-            target.target_payoff(amount= target.payoff)
+            self.reward += target.payoff
         else:
-            target.target_payoff(amount= 0)
+            self.reward += 0
     
-    def target_payoff(self, amount):
-        self.reward += amount
     
     def __str__(self):
-        return f"Name: {self.name}\nCharacter: {self.c_type}\n Reward: {self.reward}"
+        return f"Name: {self.name}\nCharacter: {self.c_type}\nReward: {self.reward}\n"
     
 
 class CopyCat(Character):
@@ -37,21 +35,65 @@ class CopyCat(Character):
         self.reward= 0
         self.cooperate= True
     
-    def play(self, target):
-        print(f"{self.name} played {self.number_of_rounds+1} rounds")
+    def _strategy(self, target):
+        # print(f"{self.name} played {self.number_of_rounds+1} rounds")
         if self.number_of_rounds == 0:
             self.cooperate= True
         else:
             self.cooperate= True if target.cooperate else False
-        
+
+    def play(self, target):
+        self._strategy(target= target)
         super().play(target= target)
 
 
-# class playbox:
-#     def __init__(self, players):
-#         self.players= players
-    
 
-#     def play_game(self):
-#         for i in self.players:
-#             i.character.self_play()
+class AlwaysCheat(Character):
+    def __init__(self, name="AlwaysCheat" ,c_type="AlwaysCheat", payoff=3, cost=1, number_of_rounds=5):
+        super().__init__(name, c_type, payoff, cost, number_of_rounds)
+        self.reward= 0
+        self.cooperate= False
+    
+    def _strategy(self, target):
+        self.cooperate= False
+
+    def play(self, target):
+        self._strategy(target= target)
+        super().play(target= target)
+
+
+
+
+
+class playbox:
+    def __init__(self, players, number_of_rounds):
+        self.players= players
+        self.number_of_rounds= number_of_rounds
+        self.total_players= self._unpack()
+
+
+    def _unpack(self):
+        total_players= []
+        for i in self.players:
+            for x in range(i["number"]):
+                agent= i["character"]()
+                agent.name= f"{agent.c_type}_{x+1}"
+                total_players.append(agent)
+        
+        return total_players
+
+
+    def simulate(self):
+        for i in range(len(self.total_players)):
+            target_players= list(range(len(self.total_players)))
+            target_players.remove(i)
+            for x in range(self.number_of_rounds):
+                self.total_players[i].number_of_rounds= x
+                for j in target_players:
+                    self.total_players[j].number_of_rounds= x
+                    self.total_players[i].play(target= self.total_players[j])
+                    self.total_players[j].play(target= self.total_players[i])
+        
+        for i in range(len(self.total_players)):
+            print(self.total_players[i])
+
