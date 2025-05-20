@@ -33,9 +33,11 @@ class AlwaysCheat(Character):
         self.reward= 0
         self.cooperate= None
         self.target_coop_hist= []
+        self.self_coop_hist= []
     
     def _strategy(self, target):
         self.cooperate= False
+        self.self_coop_hist.append(self.cooperate)
     
     def decide(self, target):
         self._strategy(target= target)
@@ -52,9 +54,11 @@ class AlwaysCooperate(Character):
         self.reward= 0
         self.cooperate= None
         self.target_coop_hist= []
+        self.self_coop_hist= []
     
     def _strategy(self, target):
         self.cooperate= True
+        self.self_coop_hist.append(self.cooperate)
     
     def decide(self, target):
         self._strategy(target= target)
@@ -70,9 +74,11 @@ class Random(Character):
         self.reward= 0
         self.cooperate= None
         self.target_coop_hist= []
+        self.self_coop_hist= []
     
     def _strategy(self, target):
         self.cooperate= np.random.choice([True, False])
+        self.self_coop_hist.append(self.cooperate)
     
     def decide(self, target):
         self._strategy(target= target)
@@ -84,11 +90,15 @@ class Random(Character):
 
 
 class CopyCat(Character):
+    """
+    Starts by cooperating. Always copies the opponent's last move from then onwards.
+    """
     def __init__(self, name="CopyCat" ,c_type="CopyCat", payoff=3, cost=1, number_of_rounds=5):
         super().__init__(name, c_type, payoff, cost, number_of_rounds)
         self.reward= 0
         self.cooperate= None
         self.target_coop_hist= []
+        self.self_coop_hist= []
     
     def _strategy(self, target):
         if self.number_of_rounds == 0:
@@ -97,6 +107,38 @@ class CopyCat(Character):
             self.cooperate= True
         elif not target.cooperate:
             self.cooperate= False
+        
+        self.self_coop_hist.append(self.cooperate)
+
+    def decide(self, target):
+        self._strategy(target)
+
+    def play(self, target):
+        super().play(target= target)
+        self.target_coop_hist.append(target.cooperate)
+
+
+class Simpleton(Character):
+    """
+    Reacts based on how the opponent responded to its own last move — if 
+    opponent cooperated, repeat your last move; if opponent cheated, switch your move.
+    """
+    def __init__(self, name="Simpleton" ,c_type="Simpleton", payoff=3, cost=1, number_of_rounds=5):
+        super().__init__(name, c_type, payoff, cost, number_of_rounds)
+        self.reward= 0
+        self.cooperate= None
+        self.target_coop_hist= []
+        self.self_coop_hist= []
+    
+    def _strategy(self, target):
+        if self.number_of_rounds == 0:
+            self.cooperate= True
+        elif self.target_coop_hist[-1]:
+            self.cooperate= self.self_coop_hist[-1]
+        elif not self.target_coop_hist[-1]:
+            self.cooperate= not self.self_coop_hist[-1]
+        
+        self.self_coop_hist.append(self.cooperate)
 
     def decide(self, target):
         self._strategy(target)
@@ -113,6 +155,7 @@ class Grudger(Character):
         self.reward= 0
         self.cooperate= None
         self.target_coop_hist= []
+        self.self_coop_hist= []
     
     def _strategy(self, target):
         if self.number_of_rounds == 0:
@@ -121,6 +164,8 @@ class Grudger(Character):
             self.cooperate= True
         elif self.number_of_rounds != 0 and False in self.target_coop_hist:
             self.cooperate= False
+        
+        self.self_coop_hist.append(self.cooperate)
 
     def decide(self, target):
         self._strategy(target= target)
@@ -132,31 +177,31 @@ class Grudger(Character):
 
 
 class playbox:
-    def __init__(self, players, number_of_rounds):
-        self.players= players
+    def __init__(self, agents, number_of_rounds):
+        self.agents= agents
         self.number_of_rounds= number_of_rounds
-        self.total_players= self._unpack()
+        self.total_agents= self._unpack()
 
     def _unpack(self):
-        total_players= []
-        for i in self.players:
+        total_agents= []
+        for i in self.agents:
             for x in range(i["agent_numbers"]):
                 agent= i["agent"]()
                 agent.name= f"{agent.c_type}_{x+1}"
                 agent.payoff= i["payoff"]
                 agent.cost= i["cost"]
-                total_players.append(agent)
+                total_agents.append(agent)
         
-        return total_players
+        return total_agents
 
     def simulate(self):
         for round_num in range(self.number_of_rounds):
-            for i in range(len(self.total_players)):
-                self.total_players[i].number_of_rounds = round_num
-            for i in range(len(self.total_players)):
-                for j in range(i + 1, len(self.total_players)):
-                    p1 = self.total_players[i]
-                    p2 = self.total_players[j]
+            for i in range(len(self.total_agents)):
+                self.total_agents[i].number_of_rounds = round_num
+            for i in range(len(self.total_agents)):
+                for j in range(i + 1, len(self.total_agents)):
+                    p1 = self.total_agents[i]
+                    p2 = self.total_agents[j]
                     
                     p1.decide(target= p2)
                     p2.decide(target= p1)
@@ -164,6 +209,6 @@ class playbox:
                     p1.play(target= p2)
                     p2.play(target= p1)
         
-        for i in range(len(self.total_players)):
-            print(self.total_players[i])
+        for i in range(len(self.total_agents)):
+            print(self.total_agents[i])
 

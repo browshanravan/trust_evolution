@@ -4,6 +4,7 @@ from trust_evolution.src.utils import(
     AlwaysCooperate,
     Grudger,
     Random,
+    Simpleton,
     playbox,
 )
 
@@ -31,14 +32,15 @@ from trust_evolution.src.utils import(
 
 
 #Advanced game play (one vs many)
-players=[
+agents=[
     {"agent": CopyCat, "agent_numbers":1, "payoff":3, "cost":1},
     {"agent": AlwaysCheat, "agent_numbers":1, "payoff":3, "cost":1},
-    # {"agent": Random, "agent_numbers":1, "payoff":3, "cost":1},
-    # {"agent": AlwaysCooperate, "agent_numbers":1, "payoff":3, "cost":1},
-    # {"agent": Grudger, "agent_numbers":1, "payoff":3, "cost":1},
+    {"agent": Simpleton, "agent_numbers":1, "payoff":3, "cost":1},
+    {"agent": Random, "agent_numbers":1, "payoff":3, "cost":1},
+    {"agent": AlwaysCooperate, "agent_numbers":1, "payoff":3, "cost":1},
+    {"agent": Grudger, "agent_numbers":1, "payoff":3, "cost":1},
     ]
     
 
 
-playbox(players= players, number_of_rounds=5).simulate()
+playbox(agents= agents, number_of_rounds=5).simulate()
