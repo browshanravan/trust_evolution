@@ -5,7 +5,7 @@ from trust_evolution.src.utils import(
 )
 
 
-# #Basic gameplay
+# #Basic gameplay (one vs one)
 # cc_1= CopyCat(name="cc_1")
 # cc_2= CopyCat(name="cc_2")
 
@@ -22,6 +22,7 @@ from trust_evolution.src.utils import(
 
 
 
+#Advanced game play (one vs many)
 players=[
     {"character": CopyCat, "number":3},
     {"character": AlwaysCheat, "number":5},
