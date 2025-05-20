@@ -1,3 +1,5 @@
+import numpy as np
+
 
 class Character:
     def __init__(self, name="base", c_type="base", payoff=3, cost=1, number_of_rounds=5):
@@ -9,49 +11,19 @@ class Character:
         self.reward= 0
         self.cooperate= None
 
- 
     def play(self, target):
         if self.cooperate:
             self.reward -= self.cost
         elif not self.cooperate:
             self.reward -= 0
 
-
         if target.cooperate:
             self.reward += target.payoff
         elif not target.cooperate:
             self.reward += 0
 
-    
-    
     def __str__(self):
         return f"Name: {self.name}\nCharacter: {self.c_type}\nReward: {self.reward}\n"
-    
-
-class CopyCat(Character):
-    def __init__(self, name="CopyCat" ,c_type="CopyCat", payoff=3, cost=1, number_of_rounds=5):
-        super().__init__(name, c_type, payoff, cost, number_of_rounds)
-        self.reward= 0
-        self.cooperate= None
-        self.target_coop_hist= []
-    
-    def _strategy(self, target):
-        if self.number_of_rounds == 0:
-            self.cooperate= True
-
-        elif target.cooperate:
-            self.cooperate= True
-
-        elif not target.cooperate:
-            self.cooperate= False
-
-    def decide(self, target):
-        self._strategy(target)
-
-
-    def play(self, target):
-        super().play(target= target)
-        self.target_coop_hist.append(target.cooperate)
 
 
 
@@ -73,6 +45,7 @@ class AlwaysCheat(Character):
         self.target_coop_hist.append(target.cooperate)
 
 
+
 class AlwaysCooperate(Character):
     def __init__(self, name="AlwaysCooperate" ,c_type="AlwaysCooperate", payoff=3, cost=1, number_of_rounds=5):
         super().__init__(name, c_type, payoff, cost, number_of_rounds)
@@ -89,6 +62,49 @@ class AlwaysCooperate(Character):
     def play(self, target):
         super().play(target= target)
         self.target_coop_hist.append(target.cooperate)
+
+
+class Random(Character):
+    def __init__(self, name="Random" ,c_type="Random", payoff=3, cost=1, number_of_rounds=5):
+        super().__init__(name, c_type, payoff, cost, number_of_rounds)
+        self.reward= 0
+        self.cooperate= None
+        self.target_coop_hist= []
+    
+    def _strategy(self, target):
+        self.cooperate= np.random.choice([True, False])
+    
+    def decide(self, target):
+        self._strategy(target= target)
+
+    def play(self, target):
+        super().play(target= target)
+        self.target_coop_hist.append(target.cooperate)
+
+
+
+class CopyCat(Character):
+    def __init__(self, name="CopyCat" ,c_type="CopyCat", payoff=3, cost=1, number_of_rounds=5):
+        super().__init__(name, c_type, payoff, cost, number_of_rounds)
+        self.reward= 0
+        self.cooperate= None
+        self.target_coop_hist= []
+    
+    def _strategy(self, target):
+        if self.number_of_rounds == 0:
+            self.cooperate= True
+        elif target.cooperate:
+            self.cooperate= True
+        elif not target.cooperate:
+            self.cooperate= False
+
+    def decide(self, target):
+        self._strategy(target)
+
+    def play(self, target):
+        super().play(target= target)
+        self.target_coop_hist.append(target.cooperate)
+
 
 
 class Grudger(Character):
@@ -121,7 +137,6 @@ class playbox:
         self.number_of_rounds= number_of_rounds
         self.total_players= self._unpack()
 
-
     def _unpack(self):
         total_players= []
         for i in self.players:
@@ -133,7 +148,6 @@ class playbox:
                 total_players.append(agent)
         
         return total_players
-
 
     def simulate(self):
         for round_num in range(self.number_of_rounds):

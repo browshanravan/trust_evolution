@@ -3,6 +3,7 @@ from trust_evolution.src.utils import(
     AlwaysCheat,
     AlwaysCooperate,
     Grudger,
+    Random,
     playbox,
 )
 
@@ -33,6 +34,7 @@ from trust_evolution.src.utils import(
 players=[
     {"agent": CopyCat, "agent_numbers":1, "payoff":3, "cost":1},
     {"agent": AlwaysCheat, "agent_numbers":1, "payoff":3, "cost":1},
+    # {"agent": Random, "agent_numbers":1, "payoff":3, "cost":1},
     # {"agent": AlwaysCooperate, "agent_numbers":1, "payoff":3, "cost":1},
     # {"agent": Grudger, "agent_numbers":1, "payoff":3, "cost":1},
     ]
