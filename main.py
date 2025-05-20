@@ -1,6 +1,7 @@
 from trust_evolution.src.utils import(
     CopyCat,
     AlwaysCheat,
+    AlwaysCooperate,
     playbox,
 )
 
@@ -24,8 +25,9 @@ from trust_evolution.src.utils import(
 
 #Advanced game play (one vs many)
 players=[
-    {"character": CopyCat, "number":3},
-    {"character": AlwaysCheat, "number":5},
+    {"agent": CopyCat, "agent_numbers":3, "payoff":3, "cost":1},
+    {"agent": AlwaysCheat, "agent_numbers":5, "payoff":3, "cost":1},
+    {"agent": AlwaysCooperate, "agent_numbers":5, "payoff":3, "cost":1},
     ]
     
 
