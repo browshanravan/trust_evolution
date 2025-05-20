@@ -37,7 +37,6 @@ class AlwaysCheat(Character):
     
     def _strategy(self, target):
         self.cooperate= False
-        self.self_coop_hist.append(self.cooperate)
     
     def decide(self, target):
         self._strategy(target= target)
@@ -45,6 +44,7 @@ class AlwaysCheat(Character):
     def play(self, target):
         super().play(target= target)
         self.target_coop_hist.append(target.cooperate)
+        self.self_coop_hist.append(self.cooperate)
 
 
 
@@ -58,7 +58,6 @@ class AlwaysCooperate(Character):
     
     def _strategy(self, target):
         self.cooperate= True
-        self.self_coop_hist.append(self.cooperate)
     
     def decide(self, target):
         self._strategy(target= target)
@@ -66,6 +65,8 @@ class AlwaysCooperate(Character):
     def play(self, target):
         super().play(target= target)
         self.target_coop_hist.append(target.cooperate)
+        self.self_coop_hist.append(self.cooperate)
+
 
 
 class Random(Character):
@@ -78,7 +79,6 @@ class Random(Character):
     
     def _strategy(self, target):
         self.cooperate= np.random.choice([True, False])
-        self.self_coop_hist.append(self.cooperate)
     
     def decide(self, target):
         self._strategy(target= target)
@@ -86,12 +86,13 @@ class Random(Character):
     def play(self, target):
         super().play(target= target)
         self.target_coop_hist.append(target.cooperate)
+        self.self_coop_hist.append(self.cooperate)
 
 
 
 class CopyCat(Character):
     """
-    Starts by cooperating. Always copies the opponent's last move from then onwards.
+    This agent starts by cooperating. Then it copies the opponent's last move from there onwards.
     """
     def __init__(self, name="CopyCat" ,c_type="CopyCat", payoff=3, cost=1, number_of_rounds=5):
         super().__init__(name, c_type, payoff, cost, number_of_rounds)
@@ -108,20 +109,51 @@ class CopyCat(Character):
         elif not target.cooperate:
             self.cooperate= False
         
-        self.self_coop_hist.append(self.cooperate)
-
     def decide(self, target):
         self._strategy(target)
 
     def play(self, target):
         super().play(target= target)
         self.target_coop_hist.append(target.cooperate)
+        self.self_coop_hist.append(self.cooperate)
+
+
+
+class CopyKitten(Character):
+    """
+    This agent is like CopyCat. It only cheats if another agent cheats twice in a row.
+    This gets over the issue of a mistaken lack of cooperation.
+    """
+    def __init__(self, name="CopyKitten" ,c_type="CopyKitten", payoff=3, cost=1, number_of_rounds=5):
+        super().__init__(name, c_type, payoff, cost, number_of_rounds)
+        self.reward= 0
+        self.cooperate= None
+        self.target_coop_hist= []
+        self.self_coop_hist= []
+    
+    def _strategy(self, target):
+        if self.number_of_rounds < 2:
+            self.cooperate= True
+        elif self.target_coop_hist[-1] == False and self.target_coop_hist[-2] == False:
+            self.cooperate= False
+        else:
+            self.cooperate= True
+        
+    def decide(self, target):
+        self._strategy(target)
+
+    def play(self, target):
+        super().play(target= target)
+        self.target_coop_hist.append(target.cooperate)
+        self.self_coop_hist.append(self.cooperate)
+
 
 
 class Simpleton(Character):
     """
-    Reacts based on how the opponent responded to its own last move — if 
-    opponent cooperated, repeat your last move; if opponent cheated, switch your move.
+    This agent reacts based on how the opponent responded to its own last move. If 
+    opponent cooperated, simpleton agent repeats its own last move; if opponent cheated, 
+    simpleton agent asitches its move.
     """
     def __init__(self, name="Simpleton" ,c_type="Simpleton", payoff=3, cost=1, number_of_rounds=5):
         super().__init__(name, c_type, payoff, cost, number_of_rounds)
@@ -138,18 +170,21 @@ class Simpleton(Character):
         elif not self.target_coop_hist[-1]:
             self.cooperate= not self.self_coop_hist[-1]
         
-        self.self_coop_hist.append(self.cooperate)
-
     def decide(self, target):
         self._strategy(target)
 
     def play(self, target):
         super().play(target= target)
         self.target_coop_hist.append(target.cooperate)
+        self.self_coop_hist.append(self.cooperate)
 
 
 
 class Grudger(Character):
+    """
+    This agent starts by cooperating. However if the oponent agent does not cooperate at any point,
+    this agent will refuse to cooperate from that point onwards.
+    """
     def __init__(self, name="Grudger" ,c_type="Grudger", payoff=3, cost=1, number_of_rounds=5):
         super().__init__(name, c_type, payoff, cost, number_of_rounds)
         self.reward= 0
@@ -164,8 +199,6 @@ class Grudger(Character):
             self.cooperate= True
         elif self.number_of_rounds != 0 and False in self.target_coop_hist:
             self.cooperate= False
-        
-        self.self_coop_hist.append(self.cooperate)
 
     def decide(self, target):
         self._strategy(target= target)
@@ -173,6 +206,7 @@ class Grudger(Character):
     def play(self, target):
         super().play(target= target)
         self.target_coop_hist.append(target.cooperate)
+        self.self_coop_hist.append(self.cooperate)
 
 
 

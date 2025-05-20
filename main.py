@@ -5,6 +5,7 @@ from trust_evolution.src.utils import(
     Grudger,
     Random,
     Simpleton,
+    CopyKitten,
     playbox,
 )
 
@@ -33,6 +34,7 @@ from trust_evolution.src.utils import(
 
 #Advanced game play (one vs many)
 agents=[
+    {"agent": CopyKitten, "agent_numbers":1, "payoff":3, "cost":1},
     {"agent": CopyCat, "agent_numbers":1, "payoff":3, "cost":1},
     {"agent": AlwaysCheat, "agent_numbers":1, "payoff":3, "cost":1},
     {"agent": Simpleton, "agent_numbers":1, "payoff":3, "cost":1},
