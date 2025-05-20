@@ -7,19 +7,21 @@ class Character:
         self.cost= cost
         self.number_of_rounds= number_of_rounds
         self.reward= 0
-        self.cooperate= True
+        self.cooperate= None
 
-
+ 
     def play(self, target):
         if self.cooperate:
             self.reward -= self.cost
-        else:
+        elif not self.cooperate:
             self.reward -= 0
+
 
         if target.cooperate:
             self.reward += target.payoff
-        else:
+        elif not target.cooperate:
             self.reward += 0
+
     
     
     def __str__(self):
@@ -30,17 +32,26 @@ class CopyCat(Character):
     def __init__(self, name="CopyCat" ,c_type="CopyCat", payoff=3, cost=1, number_of_rounds=5):
         super().__init__(name, c_type, payoff, cost, number_of_rounds)
         self.reward= 0
-        self.cooperate= True
+        self.cooperate= None
+        self.target_coop_hist= []
     
     def _strategy(self, target):
         if self.number_of_rounds == 0:
             self.cooperate= True
-        else:
-            self.cooperate= True if target.cooperate else False
+
+        elif target.cooperate:
+            self.cooperate= True
+
+        elif not target.cooperate:
+            self.cooperate= False
+
+    def decide(self, target):
+        self._strategy(target)
+
 
     def play(self, target):
-        self._strategy(target= target)
         super().play(target= target)
+        self.target_coop_hist.append(target.cooperate)
 
 
 
@@ -48,29 +59,59 @@ class AlwaysCheat(Character):
     def __init__(self, name="AlwaysCheat" ,c_type="AlwaysCheat", payoff=3, cost=1, number_of_rounds=5):
         super().__init__(name, c_type, payoff, cost, number_of_rounds)
         self.reward= 0
+        self.cooperate= None
+        self.target_coop_hist= []
+    
+    def _strategy(self, target):
         self.cooperate= False
     
-    def _strategy(self):
-        self.cooperate= False
+    def decide(self, target):
+        self._strategy(target= target)
 
     def play(self, target):
-        self._strategy()
         super().play(target= target)
-
+        self.target_coop_hist.append(target.cooperate)
 
 
 class AlwaysCooperate(Character):
-    def __init__(self, name="AlwaysCheat" ,c_type="AlwaysCheat", payoff=3, cost=1, number_of_rounds=5):
+    def __init__(self, name="AlwaysCooperate" ,c_type="AlwaysCooperate", payoff=3, cost=1, number_of_rounds=5):
         super().__init__(name, c_type, payoff, cost, number_of_rounds)
         self.reward= 0
+        self.cooperate= None
+        self.target_coop_hist= []
+    
+    def _strategy(self, target):
         self.cooperate= True
     
-    def _strategy(self):
-        self.cooperate= True
+    def decide(self, target):
+        self._strategy(target= target)
 
     def play(self, target):
-        self._strategy()
         super().play(target= target)
+        self.target_coop_hist.append(target.cooperate)
+
+
+class Grudger(Character):
+    def __init__(self, name="Grudger" ,c_type="Grudger", payoff=3, cost=1, number_of_rounds=5):
+        super().__init__(name, c_type, payoff, cost, number_of_rounds)
+        self.reward= 0
+        self.cooperate= None
+        self.target_coop_hist= []
+    
+    def _strategy(self, target):
+        if self.number_of_rounds == 0:
+            self.cooperate= True
+        elif self.number_of_rounds != 0 and False not in self.target_coop_hist:
+            self.cooperate= True
+        elif self.number_of_rounds != 0 and False in self.target_coop_hist:
+            self.cooperate= False
+
+    def decide(self, target):
+        self._strategy(target= target)
+
+    def play(self, target):
+        super().play(target= target)
+        self.target_coop_hist.append(target.cooperate)
 
 
 
@@ -95,15 +136,19 @@ class playbox:
 
 
     def simulate(self):
-        for i in range(len(self.total_players)):
-            target_players= list(range(len(self.total_players)))
-            target_players.remove(i)
-            for x in range(self.number_of_rounds):
-                self.total_players[i].number_of_rounds= x
-                for j in target_players:
-                    self.total_players[j].number_of_rounds= x
-                    self.total_players[i].play(target= self.total_players[j])
-                    self.total_players[j].play(target= self.total_players[i])
+        for round_num in range(self.number_of_rounds):
+            for i in range(len(self.total_players)):
+                self.total_players[i].number_of_rounds = round_num
+            for i in range(len(self.total_players)):
+                for j in range(i + 1, len(self.total_players)):
+                    p1 = self.total_players[i]
+                    p2 = self.total_players[j]
+                    
+                    p1.decide(target= p2)
+                    p2.decide(target= p1)
+                    
+                    p1.play(target= p2)
+                    p2.play(target= p1)
         
         for i in range(len(self.total_players)):
             print(self.total_players[i])
