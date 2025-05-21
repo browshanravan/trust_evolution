@@ -35,11 +35,11 @@ from trust_evolution.src.utils import(
 
 #Advanced game play (one vs many)
 agents=[
-    {"agent": CopyKitten, "agent_numbers":1, "payoff":3, "cost":1},
+    # {"agent": CopyKitten, "agent_numbers":1, "payoff":3, "cost":1},
     {"agent": CopyCat, "agent_numbers":1, "payoff":3, "cost":1},
     {"agent": AlwaysCheat, "agent_numbers":1, "payoff":3, "cost":1},
-    {"agent": Simpleton, "agent_numbers":1, "payoff":3, "cost":1},
-    {"agent": Random, "agent_numbers":1, "payoff":3, "cost":1},
+    # {"agent": Simpleton, "agent_numbers":1, "payoff":3, "cost":1},
+    # {"agent": Random, "agent_numbers":1, "payoff":3, "cost":1},
     {"agent": AlwaysCooperate, "agent_numbers":1, "payoff":3, "cost":1},
     {"agent": Grudger, "agent_numbers":1, "payoff":3, "cost":1},
     {"agent": Detective, "agent_numbers":1, "payoff":3, "cost":1},

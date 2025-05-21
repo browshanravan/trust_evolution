@@ -104,10 +104,8 @@ class CopyCat(Character):
     def _strategy(self, target):
         if self.number_of_rounds == 0:
             self.cooperate= True
-        elif target.cooperate:
-            self.cooperate= True
-        elif not target.cooperate:
-            self.cooperate= False
+        else:
+            self.cooperate= target.self_coop_hist[-1]
         
     def decide(self, target):
         self._strategy(target)
@@ -134,7 +132,7 @@ class CopyKitten(Character):
     def _strategy(self, target):
         if self.number_of_rounds < 2:
             self.cooperate= True
-        elif self.target_coop_hist[-1] == False and self.target_coop_hist[-2] == False:
+        elif target.self_coop_hist[-1] == False and target.self_coop_hist[-2] == False:
             self.cooperate= False
         else:
             self.cooperate= True
@@ -153,7 +151,7 @@ class Simpleton(Character):
     """
     This agent reacts based on how the opponent responded to its own last move. If 
     opponent cooperated, simpleton agent repeats its own last move; if opponent cheated, 
-    simpleton agent asitches its move.
+    simpleton agent switches its move.
     """
     def __init__(self, name="Simpleton" ,c_type="Simpleton", payoff=3, cost=1, number_of_rounds=5):
         super().__init__(name, c_type, payoff, cost, number_of_rounds)
@@ -165,9 +163,9 @@ class Simpleton(Character):
     def _strategy(self, target):
         if self.number_of_rounds == 0:
             self.cooperate= True
-        elif self.target_coop_hist[-1]:
+        elif target.self_coop_hist[-1]:
             self.cooperate= self.self_coop_hist[-1]
-        elif not self.target_coop_hist[-1]:
+        elif not target.self_coop_hist[-1]:
             self.cooperate= not self.self_coop_hist[-1]
         
     def decide(self, target):
@@ -184,6 +182,7 @@ class Grudger(Character):
     """
     This agent starts by cooperating. However if the oponent agent does not cooperate at any point,
     this agent will refuse to cooperate from that point onwards.
+    This implementation does not holds memory of an agent being previously encountered.
     """
     def __init__(self, name="Grudger" ,c_type="Grudger", payoff=3, cost=1, number_of_rounds=5):
         super().__init__(name, c_type, payoff, cost, number_of_rounds)
@@ -191,13 +190,13 @@ class Grudger(Character):
         self.cooperate= None
         self.target_coop_hist= []
         self.self_coop_hist= []
-    
+
     def _strategy(self, target):
         if self.number_of_rounds == 0:
             self.cooperate= True
-        elif self.number_of_rounds != 0 and False not in self.target_coop_hist:
+        elif self.number_of_rounds != 0 and False not in target.self_coop_hist:
             self.cooperate= True
-        elif self.number_of_rounds != 0 and False in self.target_coop_hist:
+        elif self.number_of_rounds != 0 and False in target.self_coop_hist:
             self.cooperate= False
 
     def decide(self, target):
@@ -213,7 +212,8 @@ class Grudger(Character):
 class Detective(Character):
     """
     This agent test the other agents 4 times through Cooperate → Cheat → Cooperate → Cooperate
-    If the oposing agent retaliates at any of the points, I become CopyCat. If not, I become AlwaysCheat
+    If the oposing agent retaliates at any of the points, I become CopyCat. If not, I become AlwaysCheat.
+    This implementation does not holds memory of an agent being previously encountered.
     """
     def __init__(self, name="Detective" ,c_type="Detective", payoff=3, cost=1, number_of_rounds=5):
         super().__init__(name, c_type, payoff, cost, number_of_rounds)
@@ -227,17 +227,13 @@ class Detective(Character):
             self.cooperate= True
         elif self.number_of_rounds == 1:
             self.cooperate= False
-        elif self.number_of_rounds == 2:
+        elif self.number_of_rounds in [2,3]:
             self.cooperate= True
-        elif self.number_of_rounds == 3:
-            self.cooperate= True
-        elif self.number_of_rounds > 3 and False in self.target_coop_hist:
-            if target.cooperate:
-                self.cooperate= True
+        else:
+            if False in target.self_coop_hist:
+                self.cooperate= target.self_coop_hist[-1]
             else:
                 self.cooperate= False
-        elif self.number_of_rounds > 3 and False not in self.target_coop_hist:
-            self.cooperate= False
 
     def decide(self, target):
         self._strategy(target= target)
