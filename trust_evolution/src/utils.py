@@ -263,8 +263,7 @@ class Evolution:
         
         return total_agents
 
-    def run_playbox(self):
-
+    def basic_tournament(self):
         database=[]
         for i in list(range(len(self.total_agents)))[:-1]:
             for j in range(i+1, len(self.total_agents)):
@@ -303,12 +302,12 @@ class Evolution:
                 p2.self_coop_hist= []
                 p2.target_coop_hist= []
 
-        df= self.create_scoreboard(database= database)
+        return database
 
-        return df
-
-    def create_scoreboard(self, database):
+    def run_playbox(self):
+        database= self.basic_tournament()
         df= pd.DataFrame(data= database)
         df= df.groupby(["agent_type"])["agent_reward"].sum()
         
         return df
+    
