@@ -246,12 +246,15 @@ class Detective(Character):
 
 
 class Evolution:
-    def __init__(self, agents, number_of_rounds=5):
+    def __init__(self, agents, number_of_rounds=5, number_of_tournament=2, number_of_eliminations=5):
         self.agents= agents
         self.number_of_rounds= number_of_rounds
-        self.total_agents= self._unpack()
+        self.number_of_tournament= number_of_tournament
+        self.number_of_eliminations= number_of_eliminations
+        self.total_agents= []
+        self.tournament_results= []
 
-    def _unpack(self):
+    def _basic_unpack(self):
         total_agents= []
         for i in self.agents:
             for x in range(i["agent_numbers"]):
@@ -263,7 +266,10 @@ class Evolution:
         
         return total_agents
 
-    def basic_tournament(self):
+    def basic_tournament(self, unpacking=True):
+        if unpacking:
+            self.total_agents= self._basic_unpack()
+        
         database=[]
         for i in list(range(len(self.total_agents)))[:-1]:
             for j in range(i+1, len(self.total_agents)):
@@ -304,10 +310,58 @@ class Evolution:
 
         return database
 
-    def run_playbox(self):
-        database= self.basic_tournament()
+    def run_playbox(self, unpacking=True):
+        database= self.basic_tournament(unpacking=unpacking)
         df= pd.DataFrame(data= database)
         df= df.groupby(["agent_type"])["agent_reward"].sum()
         
         return df
     
+    def run_elimination_tournament(self, unpacking=False):
+        for tournament_round in range(self.number_of_tournament):
+            if tournament_round == 0:
+                 #We only want to unpack the agents on round 0
+                 self.total_agents= self._basic_unpack()
+            
+            database= self.basic_tournament(unpacking= unpacking)
+            df= pd.DataFrame(data= database)
+            data= df.groupby(["agent_name"])["agent_reward"].sum().sort_values(ascending= False)
+            self.tournament_results.append(data)
+            
+            ##There are no tie breaking strategy. Just using the top and bottom list
+            ##Get the best x and worst x performing agents
+            bottom_list= data.iloc[-self.number_of_eliminations:].index.tolist()
+            top_list= data.iloc[:self.number_of_eliminations].index.tolist()
+            eliminated_data= data.drop(labels= bottom_list)
+
+            ##Get the max_value of the new dataframe so any new numbering for agents will be +1
+            max_value= max([int(x.split("_")[1]) for x in eliminated_data.index.tolist()])
+
+            ##drop bottom agents from self.total_agents
+            total_agents= []
+            for i in self.total_agents:
+                if i.name not in bottom_list:
+                    total_agents.append(i)
+
+            self.total_agents= total_agents
+            
+            ##add the new agents
+            for i in range(len(top_list)):
+                c_type= top_list[i].split("_")[0]
+                for x in self.agents:
+                    if x["c_type"] == c_type:
+                        y= x["agent"]()
+                        y.name= f"{c_type}_{max_value+(i+1)}"
+                        self.total_agents.append(y)
+                        break
+
+        return data
+    
+    def plot_data(self):
+        for i in range(len(self.tournament_results)):
+            df= self.tournament_results[i].to_frame()
+            df= df.reset_index()
+            df["agent_type"]= df["agent_name"].str.split("_").apply(lambda x: x[0])
+            df["tournament_round"]= i
+            print("")
+

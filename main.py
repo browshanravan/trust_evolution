@@ -35,17 +35,30 @@ from trust_evolution.src.utils import(
 
 #Advanced game play (one vs many)
 agents=[
-    {"agent": CopyCat, "agent_numbers":1, "payoff":3, "cost":1},
-    {"agent": AlwaysCheat, "agent_numbers":1, "payoff":3, "cost":1},
-    {"agent": AlwaysCooperate, "agent_numbers":1, "payoff":3, "cost":1},
-    {"agent": Grudger, "agent_numbers":1, "payoff":3, "cost":1},
-    {"agent": Detective, "agent_numbers":1, "payoff":3, "cost":1},
-    # {"agent": CopyKitten, "agent_numbers":1, "payoff":3, "cost":1},
-    # {"agent": Random, "agent_numbers":1, "payoff":3, "cost":1},
-    # {"agent": Simpleton, "agent_numbers":1, "payoff":3, "cost":1},
+    {"agent": CopyCat, "c_type": "CopyCat", "agent_numbers": 5, "payoff": 3, "cost": 1},
+    {"agent": AlwaysCheat, "c_type": "AlwaysCheat", "agent_numbers": 5, "payoff": 3, "cost": 1},
+    {"agent": AlwaysCooperate, "c_type": "AlwaysCooperate", "agent_numbers": 15, "payoff": 3, "cost": 1},
+    # {"agent": Grudger, "c_type": "Grudger", "agent_numbers": 1, "payoff": 3, "cost": 1},
+    # {"agent": Detective, "c_type": "Detective", "agent_numbers": 1, "payoff": 3, "cost": 1},
+    # {"agent": CopyKitten, "c_type": "CopyKitten", "agent_numbers": 1, "payoff": 3, "cost": 1},
+    # {"agent": Random, "c_type": "Random", "agent_numbers": 1, "payoff": 3, "cost": 1},
+    # {"agent": Simpleton, "c_type": "Simpleton", "agent_numbers": 1, "payoff": 3, "cost": 1},
     ]
     
 
+# #Simple match
+# df= Evolution(agents= agents, number_of_rounds=10).run_playbox()
 
-df= Evolution(agents= agents, number_of_rounds=10).run_playbox()
+#Elimination match
+trust= Evolution(
+    agents= agents, 
+    number_of_rounds=10, 
+    number_of_tournament=10,
+    number_of_eliminations=5,
+    )
+
+df= trust.run_elimination_tournament()
+
 print(df)
+
+# trust.plot_data()
