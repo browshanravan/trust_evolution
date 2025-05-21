@@ -210,7 +210,46 @@ class Grudger(Character):
 
 
 
-class playbox:
+class Detective(Character):
+    """
+    This agent test the other agents 4 times through Cooperate → Cheat → Cooperate → Cooperate
+    If the oposing agent retaliates at any of the points, I become CopyCat. If not, I become AlwaysCheat
+    """
+    def __init__(self, name="Detective" ,c_type="Detective", payoff=3, cost=1, number_of_rounds=5):
+        super().__init__(name, c_type, payoff, cost, number_of_rounds)
+        self.reward= 0
+        self.cooperate= None
+        self.target_coop_hist= []
+        self.self_coop_hist= []
+    
+    def _strategy(self, target):
+        if self.number_of_rounds == 0:
+            self.cooperate= True
+        elif self.number_of_rounds == 1:
+            self.cooperate= False
+        elif self.number_of_rounds == 2:
+            self.cooperate= True
+        elif self.number_of_rounds == 3:
+            self.cooperate= True
+        elif self.number_of_rounds > 3 and False in self.target_coop_hist:
+            if target.cooperate:
+                self.cooperate= True
+            else:
+                self.cooperate= False
+        elif self.number_of_rounds > 3 and False not in self.target_coop_hist:
+            self.cooperate= False
+
+    def decide(self, target):
+        self._strategy(target= target)
+
+    def play(self, target):
+        super().play(target= target)
+        self.target_coop_hist.append(target.cooperate)
+        self.self_coop_hist.append(self.cooperate)
+
+
+
+class Evolution:
     def __init__(self, agents, number_of_rounds):
         self.agents= agents
         self.number_of_rounds= number_of_rounds
@@ -228,7 +267,7 @@ class playbox:
         
         return total_agents
 
-    def simulate(self):
+    def run_playbox(self):
         for round_num in range(self.number_of_rounds):
             for i in range(len(self.total_agents)):
                 self.total_agents[i].number_of_rounds = round_num
@@ -246,3 +285,5 @@ class playbox:
         for i in range(len(self.total_agents)):
             print(self.total_agents[i])
 
+
+    # def run_matchbox(self):

@@ -6,7 +6,8 @@ from trust_evolution.src.utils import(
     Random,
     Simpleton,
     CopyKitten,
-    playbox,
+    Detective,
+    Evolution,
 )
 
 
@@ -41,8 +42,9 @@ agents=[
     {"agent": Random, "agent_numbers":1, "payoff":3, "cost":1},
     {"agent": AlwaysCooperate, "agent_numbers":1, "payoff":3, "cost":1},
     {"agent": Grudger, "agent_numbers":1, "payoff":3, "cost":1},
+    {"agent": Detective, "agent_numbers":1, "payoff":3, "cost":1},
     ]
     
 
 
-playbox(agents= agents, number_of_rounds=5).simulate()
+Evolution(agents= agents, number_of_rounds=5).run_playbox()
