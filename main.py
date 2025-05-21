@@ -15,7 +15,7 @@ from trust_evolution.src.utils import(
 # cc_1= CopyCat(name="cc_1")
 # ac_1= AlwaysCheat(name="ac_1")
 
-# for x in range(5):
+# for x in range(10):
 #     cc_1.number_of_rounds= x
 #     ac_1.number_of_rounds= x
 #     cc_1.decide(target= ac_1)
@@ -35,14 +35,14 @@ from trust_evolution.src.utils import(
 
 #Advanced game play (one vs many)
 agents=[
-    # {"agent": CopyKitten, "agent_numbers":1, "payoff":3, "cost":1},
     {"agent": CopyCat, "agent_numbers":1, "payoff":3, "cost":1},
     {"agent": AlwaysCheat, "agent_numbers":1, "payoff":3, "cost":1},
-    # {"agent": Simpleton, "agent_numbers":1, "payoff":3, "cost":1},
-    # {"agent": Random, "agent_numbers":1, "payoff":3, "cost":1},
     {"agent": AlwaysCooperate, "agent_numbers":1, "payoff":3, "cost":1},
     {"agent": Grudger, "agent_numbers":1, "payoff":3, "cost":1},
     {"agent": Detective, "agent_numbers":1, "payoff":3, "cost":1},
+    # {"agent": CopyKitten, "agent_numbers":1, "payoff":3, "cost":1},
+    # {"agent": Random, "agent_numbers":1, "payoff":3, "cost":1},
+    # {"agent": Simpleton, "agent_numbers":1, "payoff":3, "cost":1},
     ]
     
 
