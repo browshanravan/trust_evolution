@@ -13,7 +13,7 @@ from trust_evolution.src.utils import(
 
 # #Basic gameplay (one vs one)
 # cc_1= CopyCat(name="cc_1")
-# ac_1= AlwaysCheat(name="ac_1")
+# ac_1= Grudger(name="ac_1")
 
 # for x in range(10):
 #     cc_1.number_of_rounds= x
@@ -47,4 +47,5 @@ agents=[
     
 
 
-Evolution(agents= agents, number_of_rounds=10).run_playbox()
+df= Evolution(agents= agents, number_of_rounds=10).run_playbox()
+print(df)

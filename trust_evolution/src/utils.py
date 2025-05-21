@@ -1,5 +1,5 @@
 import numpy as np
-
+import pandas as pd
 
 class Character:
     def __init__(self, name="base", c_type="base", payoff=3, cost=1, number_of_rounds=5):
@@ -264,23 +264,51 @@ class Evolution:
         return total_agents
 
     def run_playbox(self):
-        #TODO This logic needs to be re-written!!
-        for round_num in range(self.number_of_rounds):
-            for i in range(len(self.total_agents)):
-                self.total_agents[i].number_of_rounds = round_num
-            for i in range(len(self.total_agents)):
-                for j in range(i + 1, len(self.total_agents)):
+
+        database=[]
+        for i in list(range(len(self.total_agents)))[:-1]:
+            for j in range(i+1, len(self.total_agents)):
+                for x in range(self.number_of_rounds):
+                    self.total_agents[i].number_of_rounds = x
+                    self.total_agents[j].number_of_rounds = x
+
                     p1 = self.total_agents[i]
                     p2 = self.total_agents[j]
-                    
+
                     p1.decide(target= p2)
                     p2.decide(target= p1)
                     
                     p1.play(target= p2)
                     p2.play(target= p1)
+                
+                agent_1_scores={
+                    "agent_type": p1.c_type,
+                    "agent_name": p1.name,
+                    "agent_reward": p1.reward,
+                }
+                database.append(agent_1_scores)
+                
+                agent_2_scores={
+                    "agent_type": p2.c_type,
+                    "agent_name": p2.name,
+                    "agent_reward": p2.reward,
+                }
+                database.append(agent_2_scores)
+                
+                p1.reward = 0
+                p1.self_coop_hist= []
+                p1.target_coop_hist= []
+                
+                p2.reward = 0
+                p2.self_coop_hist= []
+                p2.target_coop_hist= []
+
+        df= self.create_scoreboard(database= database)
+
+        return df
+
+    def create_scoreboard(self, database):
+        df= pd.DataFrame(data= database)
+        df= df.groupby(["agent_type"])["agent_reward"].sum()
         
-        for i in range(len(self.total_agents)):
-            print(self.total_agents[i])
-
-
-    # def run_tournament(self):
+        return df
