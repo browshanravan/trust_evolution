@@ -47,4 +47,4 @@ agents=[
     
 
 
-Evolution(agents= agents, number_of_rounds=5).run_playbox()
+Evolution(agents= agents, number_of_rounds=10).run_playbox()

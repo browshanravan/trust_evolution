@@ -250,7 +250,7 @@ class Detective(Character):
 
 
 class Evolution:
-    def __init__(self, agents, number_of_rounds):
+    def __init__(self, agents, number_of_rounds=5):
         self.agents= agents
         self.number_of_rounds= number_of_rounds
         self.total_agents= self._unpack()
@@ -286,4 +286,4 @@ class Evolution:
             print(self.total_agents[i])
 
 
-    # def run_matchbox(self):
+    # def run_tournament(self):
