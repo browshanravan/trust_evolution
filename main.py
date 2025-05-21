@@ -11,7 +11,7 @@ from trust_evolution.src.utils import(
 )
 
 
-# #Basic gameplay (one vs one)
+# #Basic gameplay setup (one vs one)
 # cc_1= CopyCat(name="cc_1")
 # ac_1= Grudger(name="ac_1")
 
@@ -33,7 +33,7 @@ from trust_evolution.src.utils import(
 
 
 
-#Advanced game play (one vs many)
+#Advanced game play setup (one vs many)
 agents=[
     {"agent": CopyCat, "c_type": "CopyCat", "agent_numbers": 5, "payoff": 3, "cost": 1},
     {"agent": AlwaysCheat, "c_type": "AlwaysCheat", "agent_numbers": 5, "payoff": 3, "cost": 1},
@@ -48,17 +48,18 @@ agents=[
 
 # #Simple match
 # df= Evolution(agents= agents, number_of_rounds=10).run_playbox()
+# print(df)
+
+
 
 #Elimination match
 trust= Evolution(
     agents= agents, 
-    number_of_rounds=10, 
-    number_of_tournament=10,
-    number_of_eliminations=5,
+    number_of_rounds=10, #how many rounds each pair of agents play against each other
+    number_of_tournament=10, #how many full cycles all agents play against each other
+    number_of_eliminations=5, #how many low scoring agents get eliminated by tournament
     )
 
-df= trust.run_elimination_tournament()
-
-print(df)
-
-# trust.plot_data()
+trust.run_elimination_tournament()
+trust.plot_agent_numbers()
+trust.plot_agent_scores()

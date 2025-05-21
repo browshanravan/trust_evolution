@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 class Character:
     def __init__(self, name="base", c_type="base", payoff=3, cost=1, number_of_rounds=5):
@@ -357,11 +358,63 @@ class Evolution:
 
         return data
     
-    def plot_data(self):
+    def processing_data_for_plot(self):
+        database= []
         for i in range(len(self.tournament_results)):
             df= self.tournament_results[i].to_frame()
             df= df.reset_index()
             df["agent_type"]= df["agent_name"].str.split("_").apply(lambda x: x[0])
             df["tournament_round"]= i
-            print("")
+            database.append(df)
+        
+        df= pd.concat(database).reset_index(drop=True)
+        
+        df_agent_number= df.groupby(["tournament_round", "agent_type"])["agent_type"].count().reset_index(name="agent_counts")
+        df_agent_number_pivot= df_agent_number.pivot_table(values= "agent_counts", columns= "agent_type", index="tournament_round", aggfunc="mean").fillna(value=0)
+        df_agent_number_pivot.columns.name= None
 
+        df_agent_score= df.groupby(["tournament_round", "agent_type"])["agent_reward"].sum().reset_index(name="agent_scores")
+        df_agent_score_pivot= df_agent_score.pivot_table(values= "agent_scores", columns= "agent_type", index="tournament_round", aggfunc="mean").fillna(value=0)
+        df_agent_score_pivot.columns.name= None
+        
+        return df_agent_number_pivot, df_agent_score_pivot
+    
+    def plot_agent_numbers(self):
+        df_agent_number_pivot, _= self.processing_data_for_plot()
+        
+        plt.rcParams['axes.spines.left'] = False
+        plt.rcParams['axes.spines.right'] = False
+        plt.rcParams['axes.spines.top'] = False
+        plt.rcParams['axes.spines.bottom'] = False
+        plt.rcParams['xtick.bottom'] = False
+        plt.rcParams['ytick.left'] = False
+        
+        for column in df_agent_number_pivot.columns:
+            plt.plot(df_agent_number_pivot[column], label= column)
+        
+        plt.title(f"Evolution of Trust")
+        plt.xlabel("Number of Tournaments")
+        plt.ylabel("Number of Agents")
+        plt.legend(loc="best")
+        plt.tight_layout()
+        plt.show()
+
+    def plot_agent_scores(self):
+        _, df_agent_score_pivot= self.processing_data_for_plot()
+        
+        plt.rcParams['axes.spines.left'] = False
+        plt.rcParams['axes.spines.right'] = False
+        plt.rcParams['axes.spines.top'] = False
+        plt.rcParams['axes.spines.bottom'] = False
+        plt.rcParams['xtick.bottom'] = False
+        plt.rcParams['ytick.left'] = False
+        
+        for column in df_agent_score_pivot.columns:
+            plt.plot(df_agent_score_pivot[column], label= column)
+        
+        plt.title(f"Evolution of Trust")
+        plt.xlabel("Number of Tournaments")
+        plt.ylabel("Scores of Agents")
+        plt.legend(loc="best")
+        plt.tight_layout()
+        plt.show()

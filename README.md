@@ -9,13 +9,13 @@ The original game references above explores the idea of how different play tacti
 
 This repo is an attempt to recreate the game in `python 3.10` using `OOP`, `ABM` and the concepts shown in the game above.
 
-This project is under active development and aims to provide the basic foundations for creating a game, where different agents can get added to it.
+This project aims to provide the basic foundations for creating a game, where different agents can get added to it.
 
 
 ## Notes:
 The basic tournament dynamics (`run_playbox()` method) matches the game referenced above. 
 
-When, it comes to the elimination/evolutionary tournament dynamics (`.run_elimination_tournament()` method), users might notice some scoring differences. 
+When, it comes to the elimination/evolutionary tournament dynamics (`.run_elimination_tournament()` method), users might notice some scoring differences between this implementation and the above referenced game. 
 
 This is due to how the code in this repo breaks ties and assigns new agents.
 
