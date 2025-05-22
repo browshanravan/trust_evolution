@@ -60,6 +60,8 @@ trust= Evolution(
     number_of_eliminations=5, #how many low scoring agents get eliminated by tournament
     )
 
-trust.run_elimination_tournament()
+df= trust.run_elimination_tournament()
+print(df)
+
 trust.plot_agent_numbers()
 trust.plot_agent_scores()

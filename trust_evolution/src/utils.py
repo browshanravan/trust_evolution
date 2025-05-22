@@ -260,9 +260,10 @@ class Evolution:
         for i in self.agents:
             for x in range(i["agent_numbers"]):
                 agent= i["agent"]()
-                agent.name= f"{agent.c_type}_{x+1}"
+                agent.name= f"{i['c_type']}_{x+1}"
                 agent.payoff= i["payoff"]
                 agent.cost= i["cost"]
+                agent.c_type= i["c_type"]
                 total_agents.append(agent)
         
         return total_agents
