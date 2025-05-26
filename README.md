@@ -64,12 +64,6 @@ By adjusting payoffs, population sizes, number of rounds, and elimination rules,
    pip install -r requirements.txt
    ```
 
-> Optionally, create and activate a Conda environment using the provided `environment.yml`:
-> ```bash
-> conda env create -f environment.yml
-> conda activate biokit_env
-> ```
-
 ### Quickstart
 
 Run the main script to execute a default elimination tournament and view results:
@@ -91,7 +85,6 @@ This will print the final agent score rankings and pop up two plots:
 ├── LICENSE
 ├── README.md
 ├── requirements.txt
-├── environment.yml
 ├── main.py
 ├── trust_evolution/
 │   └── src/
