@@ -55,7 +55,7 @@ By adjusting payoffs, population sizes, number of rounds, and elimination rules,
 
 1. **Clone the repository**  
    ```bash
-   git clone https://github.com/behzadrowshanravan/trust_evolution.git
+   git clone https://github.com/browshanravan/trust_evolution.git
    cd trust_evolution
    ```
 
