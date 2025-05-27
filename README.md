@@ -48,7 +48,7 @@ By adjusting payoffs, population sizes, number of rounds, and elimination rules,
 
 ### Prerequisites
 
-- Python 3.10  
+- Python 3.10 or higher
 - Git  
 
 ### Installation
